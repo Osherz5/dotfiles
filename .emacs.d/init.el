@@ -144,21 +144,25 @@
    )
 )
 
-; Add Org-Mode code block templates
-;(add-to-list 'org-structure-template-alist '("p" . "src python"))
-;(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+; Add <s TAB style code block insertion
+(require 'org-tempo)
+(setq org-modules
+      '(org-tempo)
+      )
 
-; Add Org-Mode code block templates
-(add-to-list 'org-structure-template-alist '("sh" "#+BEGIN_SRC sh ?
+(add-to-list 'org-structure-template-alist '("p" . "src python"))
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("r" . "src R"))
 
-#+END_SRC"))
-(add-to-list 'org-structure-template-alist '("p" "#+BEGIN_SRC Python ?
-
-#+END_SRC"))
-
+(setq org-babel-R-command "c:/Progra~1/R/R-4.2.1/bin/R --slave --no-save")
 
 ; Org handle tabs on src blocks
 (setq org-src-tab-acts-natively t)
+
+;; Enable cdlatex in org
+(use-package cdlatex)
+(add-hook 'org-mode-hook #'turn-on-org-cdlatex)
+(plist-put org-format-latex-options :scale 1.5)
 
 ;; Org export options
 (setq org-export-backends '(ascii html icalendar latex md odt))
@@ -256,4 +260,15 @@
       (let ((hex-byte (substring hex-string (* 2 i) (* 2 (+ i 1)))))
         (push (format "%c" (string-to-number hex-byte 16)) res)))))
 
+;; Increment number function
+(defun increment-number-at-point ()
+      (interactive)
+      (skip-chars-backward "0-9")
+      (or (looking-at "[0-9]+")
+          (error "No number at point"))
+      (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
+
+(global-set-key (kbd "C-+") 'increment-number-at-point)
+
 ;; TODO: Add encode hex
+
