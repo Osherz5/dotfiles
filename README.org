@@ -1,0 +1,19 @@
+#+TITLE: ~/.dotfiles
+#+TODO: TODO(t) | DONE(d)
+
+This is the home of my configuration files, created to make sure I get a consistent experience between the devices I use.
+
+* Bootstrapping
+** Windows
+#+begin_src shell
+bootstrap/bootstrap.bat
+#+end_src
+
+
+* Improvements
+** TODO Make init.el work for both Linux and Windows
+** TODO Add .zshrc
+** TODO Change bootstrap.bat to Powershell
+** TODO Configure global PATH through the bootstrap script
+*** Do not add duplicate entries
+** TODO Add pip install with requirements file for my commonly used modules
