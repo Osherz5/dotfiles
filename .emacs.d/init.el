@@ -17,10 +17,10 @@
         (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
 (load custom-file t)
 
-  
+
 ;; Startup optimizations
 (when (boundp 'w32-pipe-read-delay)
-(setq w32-pipe-read-delay 0))
+  (setq w32-pipe-read-delay 0))
 
 
 ;; UI settings
@@ -33,7 +33,7 @@
 (set-fringe-mode 10)        ; Give some breathing room
 
 (menu-bar-mode -1)            ; Disable the menu bar
-  
+
 (column-number-mode)
 (global-display-line-numbers-mode t)
 
@@ -81,23 +81,26 @@
          ("C-x C-f" . 'helm-find-files))
 
   :config (helm-mode 1)
-)
+  )
 
 (use-package helm-ag
   :bind (("C-c C-g" . 'helm-ag))
-)
+  )
 
 (use-package lua-mode)
 (use-package magit
   :init
   (setq magit-git-executable "C:/Program Files/Git/cmd/git.exe")
-)
+  )
 
 ;; Projectile
 (use-package projectile
-  :bind (("C-c p" . 'projectile-command-map))
-  :config (projectile-mode +1)
-  )
+  :ensure t
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :init
+  (setq projectile-mode-line-function '(lambda () (format " [%s]" (projectile-project-name))))
+  :config
+  (projectile-mode +1))
 
 (use-package solarized-theme)
 
@@ -119,22 +122,30 @@
 
 
 (use-package company
-  :config (global-company-mode t)
-  )
+  :ensure t
+  :delight company-mode
+  :demand t
+  :init
+  (setq company-idle-delay 0.1
+        company-minimum-prefix-length 1)
+  :bind (:map company-active-map
+              ("C-n" . company-select-next)
+              ("C-p". company-select-previous))
+  :config
+  (global-company-mode))
 
-
-; Org-Mode Timer
+                                        ; Org-Mode Timer
 (setq org-clock-sound "~/.emacs.d/sounds/PauseEffect.wav")
 
-; English dates in timestamps
+                                        ; English dates in timestamps
 (setq system-time-locale "C")
 
-; Org-Mode log times for TODOs
+                                        ; Org-Mode log times for TODOs
 (setq org-todo-keywords
       '((sequence "TODO(t!)" "NEXT(n!)" "|" "DONE(d!)" "CANCELED(c@/!)" )))
 
 
-; Activate Org-Mode Babel languages
+                                        ; Activate Org-Mode Babel languages
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(
@@ -142,9 +153,9 @@
    (python . t)
    (C . t)
    )
-)
+ )
 
-; Add <s TAB style code block insertion
+                                        ; Add <s TAB style code block insertion
 (require 'org-tempo)
 (setq org-modules
       '(org-tempo)
@@ -156,7 +167,7 @@
 
 (setq org-babel-R-command "c:/Progra~1/R/R-4.2.1/bin/R --slave --no-save")
 
-; Org handle tabs on src blocks
+                                        ; Org handle tabs on src blocks
 (setq org-src-tab-acts-natively t)
 
 ;; Enable cdlatex in org
@@ -167,29 +178,34 @@
 ;; Org export options
 (setq org-export-backends '(ascii html icalendar latex md odt))
 
-; Agenda keybinds
+                                        ; Agenda keybinds
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c c") #'org-capture)
 
 
-;; 4 Spaces instead of \t
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-(setq indent-line-function 'insert-tab)
+;; Json mode
 
-;; Set indent to 4 spaces also in json.el
-(setq json-encoding-default-indentation    "    ")
-
-;; Prettify JSON
 (defun prettify-json()
   (interactive)
   (json-pretty-print-buffer)
   (delete-trailing-whitespace)
-)
+  )
 
 
-(global-set-key (kbd "M-F") 'prettify-json)
+(use-package json-mode)
+(use-package flymake-easy)
+(use-package flymake-json
+  :hook (json-mode . (lambda () (
+                                 flymake-json-load
+                                 (lsp) ; This requires jsonlint installed on npm (TODO: Automate the setup)
+				                         (company-mode)
+                                 (setq-local company-dabbrev-downcase nil) ; Keep letters case on company completions
+                                 )
+                       )
+                   )
+  :bind (("M-F" . 'prettify-json))
+  )
 
 ;; Fix find in dired
 (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")
@@ -197,7 +213,7 @@
 
 ;; Fix python path in windows
 (setq python-shell-interpreter "ipython"
-  python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
+      python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
 
 
 ;; CTAGS
@@ -214,12 +230,12 @@
 (defun my-python-shell-run ()
   (interactive)
   (when (get-buffer-process "*Python*")
-     (set-process-query-on-exit-flag (get-buffer-process "*Python*") nil)
-     (kill-process (get-buffer-process "*Python*"))
-     ;; If you want to clean the buffer too.
-     ;;(kill-buffer "*Python*")
-     ;; Not so fast!
-     (sleep-for 0.5))
+    (set-process-query-on-exit-flag (get-buffer-process "*Python*") nil)
+    (kill-process (get-buffer-process "*Python*"))
+    ;; If you want to clean the buffer too.
+    ;;(kill-buffer "*Python*")
+    ;; Not so fast!
+    (sleep-for 0.5))
   (run-python (python-shell-parse-command) nil nil)
   (python-shell-send-buffer)
   ;; Pop new window only if shell isnt visible
@@ -239,18 +255,22 @@
      (define-key python-mode-map (kbd "C-h f") 'python-eldoc-at-point)))
 
 
-; Set default browser
+                                        ; Set default browser
 (setq browse-url-generic-program "c:/Program Files/Google/Chrome/Application/chrome.exe")
 (setq browse-url-browser-function 'browse-url-generic)
 
 
-; Set up my task management file on the work computer (Backed by SyncThing)
+                                        ; Specific things for my work laptop
 (when (equal system-name "OSHERJ-LP")
+                                        ; Set up my task management file (Backed by SyncThing)
   (setq org-agenda-files
         (list "c:/synced/Work.org"
               ))
   (find-file "c:/synced/Work.org") ; It's also the default startup buffer
-)
+  (load-file "C:/code/ConfigurationSchemas.el")
+  
+  )
+
 
 
 ;; Utils
@@ -262,21 +282,30 @@
 
 ;; Increment number function
 (defun increment-number-at-point ()
-      (interactive)
-      (skip-chars-backward "0-9")
-      (or (looking-at "[0-9]+")
-          (error "No number at point"))
-      (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
+  (interactive)
+  (skip-chars-backward "0-9")
+  (or (looking-at "[0-9]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1+ (string-to-number (match-string 0))))))
 
 (global-set-key (kbd "C-+") 'increment-number-at-point)
 
 (defun decrement-number-at-point ()
-      (interactive)
-      (skip-chars-backward "0-9")
-      (or (looking-at "[0-9]+")
-          (error "No number at point"))
-      (replace-match (number-to-string (1- (string-to-number (match-string 0))))))
+  (interactive)
+  (skip-chars-backward "0-9")
+  (or (looking-at "[0-9]+")
+      (error "No number at point"))
+  (replace-match (number-to-string (1- (string-to-number (match-string 0))))))
 (global-set-key (kbd "C--") 'decrement-number-at-point)
 
 ;; TODO: Add encode hex
 
+
+
+;; 4 Spaces instead of \t
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 2)
+(setq indent-line-function 'insert-tab)
+
+;; Set indent to 4 spaces also in json.el
+(setq json-encoding-default-indentation    "    ")
