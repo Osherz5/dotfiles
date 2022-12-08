@@ -90,7 +90,7 @@
 (use-package lua-mode)
 (use-package magit
   :init
-  (setq magit-git-executable "C:/Program Files/Git/cmd/git.exe")
+  (when (eq system-type 'windows-nt) (setq magit-git-executable "C:/Program Files/Git/cmd/git.exe"))
   )
 
 ;; Projectile
@@ -208,7 +208,7 @@
   )
 
 ;; Fix find in dired
-(setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"")
+(when (eq system-type 'windows-nt) (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\""))
 
 
 ;; Fix python path in windows
@@ -217,7 +217,7 @@
 
 
 ;; CTAGS
-(setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe") ;; <- your ctags path here
+(when (eq system-type 'windows-nt) (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe")) ;; <- your ctags path here
 (defun create-tags (dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
@@ -256,8 +256,9 @@
 
 
                                         ; Set default browser
-(setq browse-url-generic-program "c:/Program Files/Google/Chrome/Application/chrome.exe")
+(setq browse-url-generic-program (if (eq system-type 'windows-nt) "c:/Program Files/Google/Chrome/Application/chrome.exe" "/bin/chromium"))
 (setq browse-url-browser-function 'browse-url-generic)
+
 
 
                                         ; Specific things for my work laptop
@@ -309,3 +310,47 @@
 
 ;; Set indent to 4 spaces also in json.el
 (setq json-encoding-default-indentation    "    ")
+
+
+;; EXWM
+(when (eq system-type 'gnu/linux)
+
+  (setq exwm-enabled (and  (eq window-system 'x)
+                           (seq-contains command-line-args "--use-exwm")))
+
+  (when exwm-enabled 
+    (use-package exwm)
+    (require 'exwm-config)
+    (exwm-config-default)
+
+    (require 'exwm-systemtray)
+    (exwm-systemtray-enable)
+    (exwm-enable)
+
+    (when exwm-enabled
+      ;; These keys should always pass through to Emacs
+      (setq exwm-input-prefix-keys
+            '(?\C-x
+              ?\C-h
+              ?\M-x
+              ?\M-`
+              ?\M-&
+              ?\M-:
+              ?\C-\M-j  ;; Buffer list
+              ?\C-\M-k  ;; Browser list
+              ?\C-\M-n  ;; Next workspace
+              ?\C-\     ;; Ctrl+Space
+              ?\C-\;))
+
+      ;; Ctrl+Q will enable the next key to be sent directly
+      (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+      
+      )
+    )
+  )
+
+;; Backup files
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
