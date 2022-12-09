@@ -9,9 +9,13 @@ This is the home of my configuration files, created to make sure I get a consist
 bootstrap/bootstrap.bat
 #+end_src
 
+** Linux
+#+begin_src shell
+bootstrap/bootstrap.sh
+#+end_src
+
 
 * Improvements
-** TODO Make init.el work for both Linux and Windows
 ** TODO Add .zshrc
 ** TODO Change bootstrap.bat to Powershell
 ** TODO Configure global PATH through the bootstrap script
