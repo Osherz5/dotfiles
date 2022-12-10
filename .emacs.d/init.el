@@ -42,6 +42,7 @@
 
 
 ;; Set frame transparency
+(setq frame-alpha-lower-limit 0)
 (defvar efs/default-font-size 180)
 (defvar efs/default-variable-font-size 180)
 ;; Make frame transparency overridable
@@ -51,6 +52,8 @@
 (add-to-list 'default-frame-alist `(alpha . ,efs/frame-transparency))
 (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
@@ -99,6 +102,7 @@
   :bind-keymap ("C-c p" . projectile-command-map)
   :init
   (setq projectile-mode-line-function '(lambda () (format " [%s]" (projectile-project-name))))
+  (load-file "~/.dotfiles/.emacs.d/init_projectile.el") ; Add known projects
   :config
   (projectile-mode +1))
 
@@ -321,66 +325,7 @@
                            (seq-contains command-line-args "--use-exwm")))
 
   (when exwm-enabled 
-    (use-package exwm)
-    (require 'exwm-config)
-    (exwm-config-default)
-
-    (require 'exwm-randr)
-    (exwm-randr-enable)
-    (start-process-shell-command "xrandr" nil "xrandr --output Virtual-1 --primary --mode 2560x1440 --pos 0x0 --rotate normal")
-
-    (require 'exwm-systemtray)
-    (setq exwm-systemtray-height 100)
-    (exwm-systemtray-enable)
-
-    ;; These keys should always pass through to Emacs
-    (setq exwm-input-prefix-keys
-          '(?\C-x
-            ?\C-h
-            ?\M-x
-            ?\M-`
-            ?\M-&
-            ?\M-:
-            ?\C-\M-j  ;; Buffer list
-            ?\C-\M-k  ;; Browser list
-            ?\C-\M-n  ;; Next workspace
-            ?\C-\     ;; Ctrl+Space
-            ?\C-\;))
-
-    ;; Ctrl+Q will enable the next key to be sent directly
-    (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
-
-    ;; Set up global key bindings.  These always work, no matter the input state!
-    ;; Keep in mind that changing this list after EXWM initializes has no effect.
-    (setq exwm-input-global-keys
-          `(
-            ;; Reset to line-mode (C-c C-k switches to char-mode via exwm-input-release-keyboard)
-            ([?\s-r] . exwm-reset)
-
-            ;; Move between windows
-            ([s-left] . windmove-left)
-            ([s-right] . windmove-right)
-            ([s-up] . windmove-up)
-            ([s-down] . windmove-down)
-
-            ;; Launch applications via shell command
-            ([?\s-&] . (lambda (command)
-                         (interactive (list (read-shell-command "$ ")))
-                         (start-process-shell-command command nil command)))
-
-            ;; Switch workspace
-            ([?\s-w] . exwm-workspace-switch)
-            ([?\s-`] . (lambda () (interactive) (exwm-workspace-switch-create 0)))
-
-            ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
-            ,@(mapcar (lambda (i)
-                        `(,(kbd (format "s-%d" i)) .
-                          (lambda ()
-                            (interactive)
-                            (exwm-workspace-switch-create ,i))))
-                      (number-sequence 0 9))))
-    (exwm-enable)
-
+    (load-file "~/.dotfiles/.emacs.d/init_exwm.el")
     )
   )
 
