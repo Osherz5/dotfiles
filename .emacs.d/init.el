@@ -96,19 +96,8 @@
   (when (eq system-type 'windows-nt) (setq magit-git-executable "C:/Program Files/Git/cmd/git.exe"))
   )
 
-;; Projectile
-(use-package projectile
-  :ensure t
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :init
-  (setq projectile-mode-line-function '(lambda () (format " [%s]" (projectile-project-name))))
-  (load-file "~/.dotfiles/.emacs.d/init_projectile.el") ; Add known projects
-  :config
-  (projectile-mode +1))
-
-(use-package solarized-theme)
-
 ;; Theme
+(use-package solarized-theme)
 (load-theme 'solarized-dark t)
 
 
@@ -280,6 +269,42 @@
 
 
 
+;; Windmove - Navigate using Ctrl+ArrowKey
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings 'ctrl))
+
+
+
+;; Projectile
+(use-package projectile
+  :ensure t
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :init
+  (setq projectile-mode-line-function '(lambda () (format " [%s]" (projectile-project-name))))
+  (load-file "~/.dotfiles/.emacs.d/init_projectile.el") ; Add known projects
+  :config
+  (projectile-mode +1))
+
+;; Treemacs
+(use-package treemacs
+  :bind (("M-0" . 'treemacs-select-window))
+  )
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
+;; Centaur Tabs
+(use-package centaur-tabs
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward))
+
+
+
 ;; Utils
 (defun decode-hex-string (hex-string)
   (let ((res nil))
@@ -308,6 +333,12 @@
 ;; TODO: Add encode hex
 
 
+;; Hide DOS EOL
+(defun remove-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (setq buffer-display-table (make-display-table))
+  (aset buffer-display-table ?\^M []))
 
 ;; 4 Spaces instead of \t
 (setq-default indent-tabs-mode nil)
