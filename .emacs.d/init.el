@@ -127,7 +127,10 @@
               ("C-n" . company-select-next)
               ("C-p". company-select-previous))
   :config
-  (global-company-mode))
+  (global-company-mode)
+
+  :hook (shell-mode . (lambda () (company-mode -1))) ; Disable company in shell mode
+  )
 
                                         ; Org-Mode Timer
 (setq org-clock-sound "~/.emacs.d/sounds/PauseEffect.wav")
@@ -202,23 +205,28 @@
   :bind (("M-F" . 'prettify-json))
   )
 
-;; Fix find in dired
-(when (eq system-type 'windows-nt) (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\""))
-
-
-;; Fix python path in windows
-(setq python-shell-interpreter "ipython"
-      python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
-
 
 ;; CTAGS
-(when (eq system-type 'windows-nt) (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe")) ;; <- your ctags path here
 (defun create-tags (dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
   (shell-command
    (format "%s -e -f TAGS -R %s" path-to-ctags (directory-file-name dir-name)))
   )
+
+
+;; Windows stuff
+
+(when (eq system-type 'windows-nt)
+  (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"") ;Fix find in dired
+  (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe") ; <- your ctags path here
+  (setq compile-command  "C:/tools/msys64/mingw64/bin/mingw32-make.exe -k ") ; Use Mingw32 make.exe
+
+  ;; Fix python path in windows
+  (setq python-shell-interpreter "ipython"
+        python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
+  )
+
 
 ;; Run python and pop-up its shell.
 ;; Kill process to solve the reload modules problem.
@@ -294,6 +302,7 @@
   :after (treemacs projectile)
   :ensure t)
 
+
 ;; Centaur Tabs
 (use-package centaur-tabs
   :demand
@@ -302,7 +311,6 @@
   :bind
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward))
-
 
 
 ;; Utils
@@ -367,3 +375,11 @@
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
+
+
+(use-package mastodon
+  :config (setq mastodon-active-user "OsherJa")
+  (setq mastodon-instance-url "https://fosstodon.org")
+  )
+
+
