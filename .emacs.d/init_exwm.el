@@ -60,6 +60,28 @@
                         (exwm-workspace-switch-create ,i))))
                   (number-sequence 0 9))))
 
+;; Simulation keys
+(setq exwm-input-simulation-keys
+      '(
+        ([?\C-b] . [left])
+        ([?\M-b] . [C-left])
+        ([?\C-f] . [right])
+        ([?\M-f] . [C-right])
+        ([?\C-p] . [up])
+        ([?\C-n] . [down])
+        ([?\C-a] . [home])
+        ([?\C-e] . [end])
+        ([?\M-v] . [prior])
+        ([?\C-v] . [next])
+        ([?\C-d] . [delete])
+        ([?\M-d] . [S-end delete])
+        ([?\C-k] . [S-end delete])
+        ;([?\C-w] . [?\C-x])
+        ([?\M-w] . [?\C-c])
+        ([?\C-y] . [?\C-v])
+        ([?\C-/] . [?\C-z])
+        ([?\C-g] . [?\C-c])))
+
 ;; Polybar
 (start-process-shell-command "polybar" nil "polybar -r -c ~/.dotfiles/.polybar/config.ini mybar")
 

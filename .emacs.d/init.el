@@ -97,8 +97,12 @@
   )
 
 ;; Theme
-(use-package solarized-theme)
-(load-theme 'solarized-dark t)
+;(use-package solarized-theme)
+;(load-theme 'solarized-dark t)
+
+(use-package dracula-theme)
+(load-theme 'dracula t)
+
 
 
 (use-package transpose-frame
@@ -124,6 +128,7 @@
   (setq company-idle-delay 0.1
         company-minimum-prefix-length 1)
   :bind (:map company-active-map
+              ("<return>" . nil) ; Disabling completion on <return>
               ("C-n" . company-select-next)
               ("C-p". company-select-previous))
   :config
@@ -304,13 +309,13 @@
 
 
 ;; Centaur Tabs
-(use-package centaur-tabs
-  :demand
-  :config
-  (centaur-tabs-mode t)
-  :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
+;; (use-package centaur-tabs
+;;   :demand
+;;   :config
+;;   (centaur-tabs-mode t)
+;;   :bind
+;;   ("C-<prior>" . centaur-tabs-backward)
+;;   ("C-<next>" . centaur-tabs-forward))
 
 
 ;; Utils
