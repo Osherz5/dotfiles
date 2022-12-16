@@ -269,15 +269,23 @@
 
 
 
-                                        ; Specific things for my work laptop
-(when (equal system-name "OSHERJ-LP")
-                                        ; Set up my task management file (Backed by SyncThing)
-  (setq org-agenda-files
-        (list "c:/synced/Work.org"
-              ))
-  (find-file "c:/synced/Work.org") ; It's also the default startup buffer
-  (load-file "C:/code/ConfigurationSchemas.el")
-  
+
+(if (equal system-name "OSHERJ-LP")
+    ;; Specific things for my work laptop
+    
+    (progn
+      (setq org-agenda-files (list "c:/synced/Work.org"))  ; Set up my task management file (Backed by SyncThing)
+      (find-file "c:/synced/Work.org") ; It's also the default startup buffer
+      )
+  (progn
+    (setq org-agenda-files (list  ; Agenda on personal computer
+                            "~/synced/SharedOrg/Events.org"
+                            "~/synced/SharedOrg/Household.org"
+                            "~/synced/SharedOrg/Fitness.org"
+                            "~/synced/SharedOrg/Entertainment.org"
+                            )
+          )
+    )
   )
 
 
