@@ -283,6 +283,8 @@
                             "~/synced/SharedOrg/Household.org"
                             "~/synced/SharedOrg/Fitness.org"
                             "~/synced/SharedOrg/Entertainment.org"
+                            "~/synced/SharedOrg/Study.org"
+                            "~/synced/SharedOrg/Personal care.org"
                             )
           )
     )
