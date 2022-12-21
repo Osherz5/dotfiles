@@ -256,10 +256,16 @@
   (python-shell-send-region (region-beginning) (region-end))
   (python-shell-switch-to-shell))
 
+(defun my-python-shell-run-buffer ()
+  (interactive)
+  (python-shell-send-buffer)
+  (python-shell-switch-to-shell))
+
 (eval-after-load "python"
   '(progn
      (define-key python-mode-map (kbd "C-c C-p") 'my-python-shell-run)
      (define-key python-mode-map (kbd "C-c C-r") 'my-python-shell-run-region)
+     (define-key python-mode-map (kbd "C-c C-b") 'my-python-shell-run-buffer)
      (define-key python-mode-map (kbd "C-h f") 'python-eldoc-at-point)))
 
 
