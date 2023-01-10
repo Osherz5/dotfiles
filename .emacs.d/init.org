@@ -2,8 +2,7 @@
 #+AUTHOR: Osher Jacob
 #+PROPERTY: header-args :tangle yes :comments yes :results silent
 
-* Emacs Configuration
-** Init
+* Init
 
 #+begin_src emacs-lisp
   ;; -*- lexical-binding: t; -*-
@@ -40,7 +39,7 @@
         `((".*" ,temporary-file-directory t)))
 #+end_src
 
-** UI
+* UI
 #+begin_src emacs-lisp
   ;; UI settings
   (setq inhibit-startup-message t)
@@ -90,7 +89,7 @@
     )
 #+end_src
 
-** Packages
+* Packages
 #+begin_src emacs-lisp
   ;; TODO: Install these automatically when missing
   (require 'use-package)
@@ -106,7 +105,7 @@
   (package-initialize)
 #+end_src
 
-*** HELM
+** HELM
 #+begin_src emacs-lisp
 
   (use-package helm
@@ -132,7 +131,7 @@
 
 #+end_src
 
-*** LSP & Company
+** LSP & Company
 
 #+begin_src emacs-lisp
 
@@ -167,7 +166,7 @@
 
 #+end_src
 
-*** Org Mode
+** Org Mode
 #+begin_src emacs-lisp
 
                                           ; Org-Mode Timer
@@ -287,7 +286,7 @@
 
 #+end_src
 
-*** JSON
+** JSON
 #+begin_src emacs-lisp
   ;; Json mode
 
@@ -313,7 +312,7 @@
     )
 #+end_src
 
-** Windows stuff
+* Windows stuff
 #+begin_src emacs-lisp
   (when (eq system-type 'windows-nt)
     (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"") ;Fix find in dired
@@ -328,7 +327,7 @@
 
 #+end_src
 
-** Python
+* Python
 #+begin_src emacs-lisp
 
   ;; Run python and pop-up its shell.
@@ -370,7 +369,7 @@
 
 #+end_src
 
-** Navigation
+* Navigation
 #+begin_src emacs-lisp
   ;; Set default browser
   (setq browse-url-generic-program (if (eq system-type 'windows-nt) "c:/Program Files/Google/Chrome/Application/chrome.exe" "/bin/firefox"))
@@ -420,7 +419,7 @@
 
 
 #+end_src
-** Utils
+* Utils
 #+begin_src emacs-lisp
   (defun decode-hex-string (hex-string)
     (let ((res nil))
@@ -467,7 +466,7 @@
 
 #+end_src
 
-** EXWM
+* EXWM
 #+begin_src emacs-lisp
   (when (eq system-type 'gnu/linux)
 
@@ -483,7 +482,7 @@
 #+end_src
 
 
-** Other
+* Other
 #+begin_src emacs-lisp
   ;; CTAGS
   (defun create-tags (dir-name)
