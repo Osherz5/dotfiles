@@ -46,7 +46,62 @@ end
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(gears.filesystem.get_themes_dir() .. "xresources/theme.lua")
-beautiful.wallpaper = awful.util.get_configuration_dir() .. "wallpaper.png"
+
+
+-- Changing wallpapers
+local wallpaper_dir = awful.util.get_configuration_dir() .. "wallpapers"
+
+function string.starts(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
+end
+
+function scandir(directory)
+    local i,j, t, popen = 0,0, {}, io.popen
+    local pfile = popen('ls -a "'..directory..'"')
+    for filename in pfile:lines() do
+        i = i + 1
+
+       if not string.starts(filename, ".") then
+          t[j] = filename
+          j = j +1
+       end
+
+    end
+    pfile:close()
+    return t
+end
+
+local wallpapers = scandir(wallpaper_dir)
+local current_wp = 0
+
+local wallpaper_interval = 60*10 -- In seconds
+local wp_timer = gears.timer.start_new(wallpaper_interval, function()
+
+                                          -- Sequential
+                                          -- current_wp = current_wp + 1 
+                                          -- current_wp = math.fmod(current_wp, #wallpapers+1)
+
+                                          -- Random
+                                          math.randomseed(os.time())
+                                          current_wp = math.random(0,#wallpapers)
+
+                                          -- naughty.notify({text=wallpapers[current_wp]})
+                                          wp_path = wallpaper_dir .. "/" .. wallpapers[current_wp]
+                                          beautiful.wallpaper = wp_path
+
+                                          awful.screen.connect_for_each_screen(function(s)
+                                                -- Wallpaper
+                                                gears.wallpaper.maximized(wp_path, screen[1], true)
+                                          end
+                                          )
+
+                                          return true
+end
+)
+-- naughty.notify({text=tostring(wp_timer)})
+wp_timer:emit_signal("timeout")
+
+
 
 -- This is used later as the default terminal and editor to run.
 terminal = "kitty"
