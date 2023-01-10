@@ -1,5 +1,8 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Osher Jacob
 #+PROPERTY: header-args :tangle yes :comments yes :results silent
-* Emacs 
+
+* Emacs Configuration
 ** Init
 
 #+begin_src emacs-lisp
@@ -386,11 +389,14 @@
     :bind-keymap ("C-c p" . projectile-command-map)
     :init
     (setq projectile-mode-line-function '(lambda () (format " [%s]" (projectile-project-name))))
-    (load-file "~/.dotfiles/.emacs.d/init_projectile.el") ; Add known projects
+
+    ;; Add known projects
+    (projectile-add-known-project "~/.dotfiles") ; Easy access to dotfiles
+
     :config
     (projectile-mode +1))
 
-  (projectile-add-known-project "~/.dotfiles") ; Easy access to dotfiles
+
 
 
   ;; Treemacs
@@ -493,6 +499,9 @@
     :config (setq mastodon-active-user "OsherJa")
     (setq mastodon-instance-url "https://fosstodon.org")
     )
-
 #+end_src
 
+;; Local Variables: 
+;; eval: (add-hook 'after-save-hook (lambda ()(if (y-or-n-p "Reload?")(load-file user-init-file))) nil t) 
+;; eval: (add-hook 'after-save-hook (lambda ()(if (y-or-n-p "Tangle?")(org-babel-tangle))) nil t) 
+;; End:
