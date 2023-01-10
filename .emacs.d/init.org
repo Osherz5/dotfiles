@@ -1,5 +1,4 @@
 #+PROPERTY: header-args :tangle yes :comments yes :results silent
-
 * Emacs 
 ** Init
 
@@ -83,14 +82,9 @@
   (use-package dracula-theme)
   (load-theme 'dracula t)
 
-
-
   (use-package transpose-frame
     :bind (("s-SPC" . transpose-frame))
     )
-
-
-
 #+end_src
 
 ** Packages
@@ -107,9 +101,6 @@
   ;; and `package-pinned-packages`. Most users will not need or want to do this.
   ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
   (package-initialize)
-
-
-  (use-package lua-mode)
 #+end_src
 
 *** HELM
@@ -208,7 +199,9 @@
   (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
   (add-to-list 'org-structure-template-alist '("r" . "src R"))
 
-  (setq org-babel-R-command "c:/Progra~1/R/R-4.2.1/bin/R --slave --no-save")
+  (when (eq system-type 'windows-nt)
+    (setq org-babel-R-command "c:/Progra~1/R/R-4.2.1/bin/R --slave --no-save")
+    )
 
                                           ; Org handle tabs on src blocks
   (setq org-src-tab-acts-natively t)
@@ -236,7 +229,7 @@
 
   (if (string-equal (downcase system-name) "osherj-lp")
       ;; Specific org paths for my work laptop
-    
+
       (progn
         (setq org-agenda-files (list "c:/synced/Work.org"))  ; Set up my task management file (Backed by SyncThing)
         (setq org-roam-directory "c:/roam")
@@ -293,7 +286,6 @@
 
 *** JSON
 #+begin_src emacs-lisp
-
   ;; Json mode
 
   (defun prettify-json()
@@ -316,24 +308,10 @@
                      )
     :bind (("M-F" . 'prettify-json))
     )
-
-
-
 #+end_src
-
-
-;; CTAGS
-(defun create-tags (dir-name)
-"Create tags file."
-(interactive "DDirectory: ")
-(shell-command
-(format "%s -e -f TAGS -R %s" path-to-ctags (directory-file-name dir-name)))
-)
-
 
 ** Windows stuff
 #+begin_src emacs-lisp
-
   (when (eq system-type 'windows-nt)
     (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"") ;Fix find in dired
     (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe") ; <- your ctags path here
@@ -391,7 +369,7 @@
 
 ** Navigation
 #+begin_src emacs-lisp
-                                          ; Set default browser
+  ;; Set default browser
   (setq browse-url-generic-program (if (eq system-type 'windows-nt) "c:/Program Files/Google/Chrome/Application/chrome.exe" "/bin/firefox"))
   (setq browse-url-browser-function 'browse-url-generic)
 
@@ -493,14 +471,21 @@
     )
 
   (setq visible-bell t)
-
-
 #+end_src
 
 
-** Fun
-
+** Other
 #+begin_src emacs-lisp
+  ;; CTAGS
+  (defun create-tags (dir-name)
+    "Create tags file."
+    (interactive "Directory: ")
+    (shell-command
+     (format "%s -e -f TAGS -R %s" path-to-ctags (directory-file-name dir-name)))
+    )
+
+  (use-package lua-mode)
+
   (use-package mastodon
     :config (setq mastodon-active-user "OsherJa")
     (setq mastodon-instance-url "https://fosstodon.org")
@@ -508,4 +493,3 @@
 
 #+end_src
 
-  
