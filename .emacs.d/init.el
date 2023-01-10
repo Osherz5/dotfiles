@@ -195,6 +195,29 @@
 (global-set-key (kbd "C-c b") 'org-agenda-inactive) ; Inactive timestamps agenda
 
 
+(if (string-equal (downcase system-name) "osherj-lp")
+    ;; Specific org paths for my work laptop
+    
+    (progn
+      (setq org-agenda-files (list "c:/synced/Work.org"))  ; Set up my task management file (Backed by SyncThing)
+      (setq org-roam-directory "c:/roam")
+
+      (find-file "c:/synced/Work.org") ; It's also the default startup buffer
+      )
+  (progn
+    (setq org-agenda-files (list  ; Org paths on personal computer
+                            "~/synced/SharedOrg/Events.org"
+                            "~/synced/SharedOrg/Household.org"
+                            "~/synced/SharedOrg/Fitness.org"
+                            "~/synced/SharedOrg/Entertainment.org"
+                            "~/synced/SharedOrg/Study.org"
+                            "~/synced/SharedOrg/Personal care.org"
+                            )
+          )
+    (setq org-roam-directory "~/roam")
+    )
+  )
+
 ;; Org Roam
 (use-package org-roam
   :hook
@@ -203,11 +226,22 @@
   (org-roam-db-autosync-mode)
   :custom
   (org-roam-dailies-directory "daily/")
-  (org-roam-dailies-capture-templates
-   '(("d" "default" entry
+  (org-roam-capture-templates
+   `(("d" "default" plain
       "* %?"
       :target (file+head "%<%Y-%m-%d>.org"
-                         "#+title: %<%Y-%m-%d>\n"))))
+                         "#+title: %<%Y-%m-%d>\n"))
+     ("p" "project" plain
+      (file ,(concat org-roam-directory "/templates/project.org"))
+      :target (file+head "%<%Y-%m-%d>.org"
+                         "#+title: %<%Y-%m-%d>\n#+filetags: project\n#+date: %U")
+      :unarrowed t)
+     ("c" "concept" plain
+      (file ,(concat org-roam-directory "/templates/concept.org"))
+      :target (file+head "%<%Y-%m-%d>.org"
+                         "#+title: %<%Y-%m-%d>\n#+filetags: concept\n#+ %U")
+      :unarrowed t))
+   )
   :bind        ("C-c n l" . org-roam)
   ("C-c n f" . org-roam-node-find)
   ("C-c n b" . org-roam-switch-to-buffer)
@@ -302,32 +336,6 @@
                                         ; Set default browser
 (setq browse-url-generic-program (if (eq system-type 'windows-nt) "c:/Program Files/Google/Chrome/Application/chrome.exe" "/bin/firefox"))
 (setq browse-url-browser-function 'browse-url-generic)
-
-
-
-
-(if (string-equal (downcase system-name) "osherj-lp")
-    ;; Specific things for my work laptop
-    
-    (progn
-      (setq org-agenda-files (list "c:/synced/Work.org"))  ; Set up my task management file (Backed by SyncThing)
-      (setq org-roam-directory "c:/roam")
-
-      (find-file "c:/synced/Work.org") ; It's also the default startup buffer
-      )
-  (progn
-    (setq org-agenda-files (list  ; Agenda on personal computer
-                            "~/synced/SharedOrg/Events.org"
-                            "~/synced/SharedOrg/Household.org"
-                            "~/synced/SharedOrg/Fitness.org"
-                            "~/synced/SharedOrg/Entertainment.org"
-                            "~/synced/SharedOrg/Study.org"
-                            "~/synced/SharedOrg/Personal care.org"
-                            )
-          )
-    )
-  )
-
 
 
 ;; Windmove - Navigate using Ctrl+ArrowKey
