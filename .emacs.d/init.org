@@ -390,6 +390,9 @@
     :config
     (projectile-mode +1))
 
+  (projectile-add-known-project "~/.dotfiles") ; Easy access to dotfiles
+
+
   ;; Treemacs
   (use-package treemacs
     :bind (("M-0" . 'treemacs-select-window))
