@@ -249,11 +249,7 @@
     :config
     (org-roam-db-autosync-mode)
     :custom
-    (if (eq system-type 'windows-nt)
-        (org-roam-directory "c:/roam")
-      (org-roam-directory "~/roam")
-      )
-
+    (org-roam-directory (if (eq system-type 'windows-nt) "c:/roam" "~/roam"))
     (org-roam-dailies-directory "daily/")
     (org-roam-capture-templates
      `(("d" "default" plain
@@ -496,6 +492,5 @@
 #+end_src
 
 ;; Local Variables: 
-;; eval: (add-hook 'after-save-hook (lambda ()(if (y-or-n-p "Reload?")(load-file user-init-file))) nil t) 
-;; eval: (add-hook 'after-save-hook (lambda ()(if (y-or-n-p "Tangle?")(org-babel-tangle))) nil t) 
+;; eval: (add-hook 'after-save-hook (lambda ()(org-babel-tangle)) nil t)
 ;; End:
