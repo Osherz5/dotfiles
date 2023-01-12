@@ -229,19 +229,23 @@
   (org-roam-capture-templates
    `(("d" "default" plain
       "* %?"
-      :target (file+head "%<%Y-%m-%d>.org"
-                         "#+title: %<%Y-%m-%d>\n"))
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n"))
      ("p" "project" plain
       (file ,(concat org-roam-directory "/templates/project.org"))
-      :target (file+head "%<%Y-%m-%d>.org"
-                         "#+title: %<%Y-%m-%d>\n#+filetags: project\n#+date: %U")
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title:${title}\n#+filetags: project\n#+date: %U")
       :unarrowed t)
      ("c" "concept" plain
       (file ,(concat org-roam-directory "/templates/concept.org"))
-      :target (file+head "%<%Y-%m-%d>.org"
-                         "#+title: %<%Y-%m-%d>\n#+filetags: concept\n#+ %U")
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+filetags: concept\n#+ %U")
       :unarrowed t))
    )
+  (org-roam-node-display-template
+      (concat "${title:*} "
+              (propertize "${tags:10}" 'face 'org-tag)))
+  
   :bind        ("C-c n l" . org-roam)
   ("C-c n f" . org-roam-node-find)
   ("C-c n b" . org-roam-switch-to-buffer)
