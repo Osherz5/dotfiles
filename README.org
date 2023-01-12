@@ -2,6 +2,7 @@
 #+TODO: TODO(t) | DONE(d)
 
 This is the home of my configuration files, created to make sure I get a consistent experience between the devices I use.
+Most of the action is in: [[file:.emacs.d/init.org][emacs.d/init.org]]
 
 * Bootstrapping
 ** Windows
@@ -14,16 +15,3 @@ bootstrap/bootstrap.bat
 bootstrap/bootstrap.sh
 #+end_src
 
-
-* Improvements
-** TODO Add .zshrc
-** TODO Change bootstrap.bat to Powershell
-** TODO Configure global PATH through the bootstrap script (Windows)
-*** Do not add duplicate entries
-** TODO Add pip install with requirements file for my commonly used modules
-
-
-** TODO Disable PC speaker
-** TODO Transparecy is not working, can't see bg
-** TODO Gmail in emacs (use .authinfo.gpg)
-https://www.emacswiki.org/emacs/GnusGmail
