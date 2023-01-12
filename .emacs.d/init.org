@@ -254,17 +254,17 @@
     (org-roam-capture-templates
      `(("d" "default" plain
         "* %?"
-        :target (file+head "%<%Y-%m-%d>.org"
-                           "#+title: %<%Y-%m-%d>\n"))
+        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title: ${title}\n"))
        ("p" "project" plain
         (file ,(concat org-roam-directory "/templates/project.org"))
-        :target (file+head "%<%Y-%m-%d>.org"
-                           "#+title: %<%Y-%m-%d>\n#+filetags: project\n#+date: %U")
+        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title:${title}\n#+filetags: project\n#+date: %U")
         :unarrowed t)
        ("c" "concept" plain
         (file ,(concat org-roam-directory "/templates/concept.org"))
-        :target (file+head "%<%Y-%m-%d>.org"
-                           "#+title: %<%Y-%m-%d>\n#+filetags: concept\n#+ %U")
+        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title: ${title}\n#+filetags: concept\n#+ %U")
         :unarrowed t))
      )
     :bind        ("C-c n l" . org-roam)
@@ -273,6 +273,8 @@
     ("C-c n g" . org-roam-graph-show)
     ("C-c n i" . org-roam-node-insert)
     )
+
+  (use-package org-roam-ui)
 
 
 #+end_src
