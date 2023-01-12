@@ -248,9 +248,16 @@
     (after-init . org-roam-mode)
     :config
     (org-roam-db-autosync-mode)
+
+    ;; Fix graph org roam graph in windows
+     (when (eq system-type 'windows-nt) (progn (setq org-roam-graph-executable "c:/tools/Graphviz/bin/dot.exe")) (setq org-roam-graph-viewer "c:/Program Files/Google/Chrome/Application/chrome.exe"))
     :custom
+
+    ;; Directories
     (org-roam-directory (if (eq system-type 'windows-nt) "c:/roam" "~/roam"))
     (org-roam-dailies-directory "daily/")
+
+    ;; Templates
     (org-roam-capture-templates
      `(("d" "default" plain
         "* %?"
@@ -267,10 +274,18 @@
                            "#+title: ${title}\n#+filetags: concept\n#+ %U")
         :unarrowed t))
      )
+
+    (org-roam-dailies-capture-templates
+          '(("d" "default" entry
+             "* %?"
+             :target (file+head "%<%Y-%m-%d>.org"
+                                "#+title: %<%Y-%m-%d>\n"))))
+
     :bind        ("C-c n l" . org-roam)
     ("C-c n f" . org-roam-node-find)
     ("C-c n b" . org-roam-switch-to-buffer)
     ("C-c n g" . org-roam-graph-show)
+    ("C-c n c" . org-roam-dailies-capture-today)
     ("C-c n i" . org-roam-node-insert)
     )
 
