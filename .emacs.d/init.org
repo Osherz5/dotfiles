@@ -320,6 +320,62 @@
     )
 #+end_src
 
+** Search Engines
+#+begin_src emacs-lisp
+    (use-package engine-mode
+      :ensure t
+
+      :config
+      (engine-mode t))
+
+    (defengine amazon
+    "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=%s")
+
+  (defengine github
+    "https://github.com/search?ref=simplesearch&q=%s"
+    :keybinding "h")
+
+  (defengine google
+    "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
+    :keybinding "g")
+
+  (defengine google-images
+    "https://www.google.com/images?hl=en&source=hp&biw=1440&bih=795&gbv=2&aq=f&aqi=&aql=&oq=&q=%s")
+
+  (defengine google-maps
+    "https://maps.google.com/maps?q=%s"
+    :docstring "Mappin' it up.")
+
+  (defengine project-gutenberg
+    "https://www.gutenberg.org/ebooks/search/?query=%s")
+
+  (defengine qwant
+    "https://www.qwant.com/?q=%s")
+
+  (defengine stack-overflow
+    "https://stackoverflow.com/search?q=%s"
+    :keybinding "s")
+
+  (defengine twitter
+    "https://twitter.com/search?q=%s")
+
+  (defengine wikipedia
+    "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
+    :keybinding "w"
+    :docstring "Searchin' the wikis.")
+
+  (defengine wiktionary
+    "https://www.wikipedia.org/search-redirect.php?family=wiktionary&language=en&go=Go&search=%s"
+    :keybinding "d")
+
+  (defengine wolfram-alpha
+    "https://www.wolframalpha.com/input/?i=%s")
+
+  (defengine youtube
+    "https://www.youtube.com/results?aq=f&oq=&search_query=%s"
+    :keybinding "y")
+#+end_src
+
 * Windows stuff
 #+begin_src emacs-lisp
   (when (eq system-type 'windows-nt)
@@ -380,7 +436,13 @@
 * Navigation
 #+begin_src emacs-lisp
   ;; Set default browser
-  (setq browse-url-generic-program (if (eq system-type 'windows-nt) "c:/Program Files/Google/Chrome/Application/chrome.exe" "/bin/firefox"))
+  (setq browse-url-generic-program (if (eq system-type 'windows-nt)
+                                       (if (string-equal (downcase system-name) "desktop-bc8fpn3")
+                                           ;; Specific paths for my work laptop
+                                           "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+                                         "C:/Program Files/Google/Chrome/Application/chrome.exe"
+                                         )
+                                     "/bin/firefox"))
   (setq browse-url-browser-function 'browse-url-generic)
 
 
