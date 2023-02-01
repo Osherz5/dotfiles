@@ -124,6 +124,7 @@
   (use-package magit
     :init
     (when (eq system-type 'windows-nt) (setq magit-git-executable "C:/Program Files/Git/cmd/git.exe"))
+    (setq magit-save-repository-buffers 'dontask)
     )
 
 
@@ -154,7 +155,8 @@
                 ("C-n" . company-select-next)
                 ("C-p". company-select-previous))
     :config
-    (global-company-mode)
+    (setq company-dabbrev-downcase nil) ; Keep letters case on company completions
+    (global-company-mode t)
 
     :hook (shell-mode . (lambda () (company-mode -1))) ; Disable company in shell mode
     )
@@ -192,7 +194,7 @@
 
 
   (add-to-list 'org-structure-template-alist '("p" . "src python"))
-  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+  (add-to-list 'org-structure-template-alist '("shell" . "src shell"))
   (add-to-list 'org-structure-template-alist '("r" . "src R"))
 
   (when (eq system-type 'windows-nt)
@@ -248,10 +250,10 @@
     (after-init . org-roam-mode)
     :config
     (org-roam-db-autosync-mode)
-
     ;; Fix graph org roam graph in windows
-     (when (eq system-type 'windows-nt) (progn (setq org-roam-graph-executable "c:/tools/Graphviz/bin/dot.exe")) (setq org-roam-graph-viewer "c:/Program Files/Google/Chrome/Application/chrome.exe"))
+    (when (eq system-type 'windows-nt) (progn (setq org-roam-graph-executable "c:/tools/Graphviz/bin/dot.exe")) (setq org-roam-graph-viewer "c:/Program Files/Google/Chrome/Application/chrome.exe"))
     :custom
+    (org-roam-completion-everywhere t)
 
     ;; Directories
     (org-roam-directory (if (eq system-type 'windows-nt) "c:/roam" "~/roam"))
@@ -276,10 +278,10 @@
      )
 
     (org-roam-dailies-capture-templates
-          '(("d" "default" entry
-             "* %?"
-             :target (file+head "%<%Y-%m-%d>.org"
-                                "#+title: %<%Y-%m-%d>\n"))))
+     '(("d" "default" entry
+        "* %?"
+        :target (file+head "%<%Y-%m-%d>.org"
+                           "#+title: %<%Y-%m-%d>\n"))))
 
     :bind        ("C-c n l" . org-roam)
     ("C-c n f" . org-roam-node-find)
@@ -312,7 +314,6 @@
                                    flymake-json-load
                                    (lsp) ; This requires jsonlint installed on npm (TODO: Automate the setup)
                                    (company-mode)
-                                   (setq-local company-dabbrev-downcase nil) ; Keep letters case on company completions
                                    )
                          )
                      )
