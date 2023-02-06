@@ -217,18 +217,19 @@
   (global-set-key (kbd "C-c a") #'org-agenda)
   (global-set-key (kbd "C-c c") #'org-capture)
 
-  (defun org-agenda-inactive ()
+  (defun org-agenda-inactive () ; Doesn't work on rebuild
     (interactive)
     (let ((org-agenda-include-inactive-timestamps t))
       (org-agenda))
     )
   (global-set-key (kbd "C-c b") 'org-agenda-inactive) ; Inactive timestamps agenda
+  (setq org-agenda-include-inactive-timestamps t) ; We'll give it a shot
 
   (if (string-equal (downcase system-name) "osherj-lp")
       ;; Specific org paths for my work laptop
 
       (progn
-        (setq org-agenda-files (list "c:/synced/Work.org"))  ; Set up my task management file (Backed by SyncThing)
+        (setq org-agenda-files (list "c:/synced/Work.org" "c:/roam"))  ; Set up my task management file (Backed by SyncThing)
         (find-file "c:/synced/Work.org") ; It's also the default startup buffer
         )
     (progn
