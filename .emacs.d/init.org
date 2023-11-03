@@ -68,13 +68,13 @@
   (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-  ;; Disable line numbers for some modes
+  ;; Disable line numbers and company for some modes
   (dolist (mode '(org-mode-hook
                   term-mode-hook
                   shell-mode-hook
                   treemacs-mode-hook
                   eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+    (add-hook mode (lambda () (display-line-numbers-mode 0) (company-mode 0))))
 
 
   ;; Theme
@@ -128,6 +128,7 @@
   (use-package magit
     :init
     (when (eq system-type 'windows-nt) (setq magit-git-executable "C:/Program Files/Git/cmd/git.exe"))
+    ; (setq magit-save-repository-buffers nil)
     (setq magit-save-repository-buffers 'dontask)
     )
 
@@ -216,6 +217,10 @@
   ;; Enable cdlatex in org
   (use-package cdlatex)
   (add-hook 'org-mode-hook #'turn-on-org-cdlatex)
+
+  ;; Automatically toggle latex fragments
+  (add-hook 'org-mode-hook 'org-fragtog-mode)
+
   (plist-put org-format-latex-options :scale 1.5)
 
   ;; Org export options
@@ -257,6 +262,9 @@
 
   ;; Org Roam
   (use-package org-roam
+    ;;:hook
+    ;;(after-init . org-roam-mode)
+
     :config
     (org-roam-db-autosync-mode)
     ;; Fix graph org roam graph in windows
@@ -272,7 +280,8 @@
     (org-roam-capture-templates
      `(("d" "default" plain
         "* %?"
-        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+        :target (file+head "%<%Y%m%d%H%M%S>
+-${slug}.org"
                            "#+title: ${title}\n"))
        ("p" "project" plain
         (file ,(concat org-roam-directory "/templates/project.org"))
@@ -392,19 +401,31 @@
     :keybinding "y")
 #+end_src
 
+
 * Windows stuff
 #+begin_src emacs-lisp
-  (when (eq system-type 'windows-nt)
-    (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"") ;Fix find in dired
-    (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe") ; <- your ctags path here
-    (setq compile-command  "C:/tools/msys64/mingw64/bin/mingw32-make.exe -k ") ; Use Mingw32 make.exe
+  (if (eq system-type 'windows-nt)
+      (progn
+        (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"") ;Fix find in dired
+        (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe") ; <- your ctags path here
+        (setq compile-command  "C:/tools/msys64/mingw64/bin/mingw32-make.exe -k ") ; Use Mingw32 make.exe
 
-    ;; Fix python path in windows
-    (setq python-shell-interpreter "ipython"
-          python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
+        ;; Fix python path in windows
+        (setq python-shell-interpreter "ipython"
+              python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
+        )
+
+    (progn
+      (setq path-to-ctags "ctags") ; default linux path
+      )
     )
 
 
+#+end_src
+
+* JS
+#+begin_src emacs-lisp
+  (setq js-indent-level 2)
 #+end_src
 
 * Python
