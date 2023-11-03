@@ -102,6 +102,10 @@
   ;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
   ;; and `package-pinned-packages`. Most users will not need or want to do this.
   ;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives '( "jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/") t)
+  (setq package-archive-priorities '(("melpa"    . 5)
+                                   ("jcs-elpa" . 0)))
+
   (package-initialize)
 #+end_src
 
@@ -124,7 +128,8 @@
   (use-package magit
     :init
     (when (eq system-type 'windows-nt) (setq magit-git-executable "C:/Program Files/Git/cmd/git.exe"))
-    (setq magit-save-repository-buffers nil)
+    ; (setq magit-save-repository-buffers nil)
+    (setq magit-save-repository-buffers 'dontask)
     )
 
 
@@ -134,13 +139,18 @@
 
 #+begin_src emacs-lisp
 
-  (use-package lsp-mode)
+  (use-package lsp-mode
+    :config
+    (add-to-list 'lsp-file-watch-ignored-directories "c:/projects/C2Server/c2_research'")
+    )
   (use-package lsp-pyright
     :hook (python-mode . (lambda ()
                            (require 'lsp-pyright)
                            (lsp))); or lsp-deferred
     :bind (:map python-mode-map ("C-M-l r" . lsp-workspace-restart)
-                ("C-M-l R" . lsp-rename))
+                ("C-M-l R" . lsp-rename)
+                ("M-r" . lsp-find-references)
+                )
     )
 
   (use-package company
@@ -155,7 +165,8 @@
                 ("C-n" . company-select-next)
                 ("C-p". company-select-previous))
     :config
-    (global-company-mode)
+    (setq company-dabbrev-downcase nil) ; Keep letters case on company completions
+    (global-company-mode t)
 
     :hook (shell-mode . (lambda () (company-mode -1))) ; Disable company in shell mode
     )
@@ -193,7 +204,7 @@
 
 
   (add-to-list 'org-structure-template-alist '("p" . "src python"))
-  (add-to-list 'org-structure-template-alist '("sh" . "src sh"))
+  (add-to-list 'org-structure-template-alist '("shell" . "src shell"))
   (add-to-list 'org-structure-template-alist '("r" . "src R"))
 
   (when (eq system-type 'windows-nt)
@@ -220,18 +231,20 @@
   (global-set-key (kbd "C-c a") #'org-agenda)
   (global-set-key (kbd "C-c c") #'org-capture)
 
-  (defun org-agenda-inactive ()
+  (defun org-agenda-inactive () ; Doesn't work on rebuild
     (interactive)
     (let ((org-agenda-include-inactive-timestamps t))
       (org-agenda))
     )
   (global-set-key (kbd "C-c b") 'org-agenda-inactive) ; Inactive timestamps agenda
+  (setq org-agenda-include-inactive-timestamps t) ; To show all state changes in agenda
+  (setq org-agenda-start-on-weekday 0) ; Start week on Sunday
 
   (if (string-equal (downcase system-name) "osherj-lp")
       ;; Specific org paths for my work laptop
 
       (progn
-        (setq org-agenda-files (list "c:/synced/Work.org"))  ; Set up my task management file (Backed by SyncThing)
+        (setq org-agenda-files (list "c:/synced/Work.org" "c:/roam"))  ; Set up my task management file (Backed by SyncThing)
         (find-file "c:/synced/Work.org") ; It's also the default startup buffer
         )
     (progn
@@ -251,61 +264,141 @@
   (use-package org-roam
     ;;:hook
     ;;(after-init . org-roam-mode)
+
     :config
     (org-roam-db-autosync-mode)
+    ;; Fix graph org roam graph in windows
+    (when (eq system-type 'windows-nt) (progn (setq org-roam-graph-executable "c:/tools/Graphviz/bin/dot.exe")) (setq org-roam-graph-viewer "c:/Program Files/Google/Chrome/Application/chrome.exe"))
     :custom
+    (org-roam-completion-everywhere t)
+
+    ;; Directories
     (org-roam-directory (if (eq system-type 'windows-nt) "c:/roam" "~/roam"))
     (org-roam-dailies-directory "daily/")
+
+    ;; Templates
     (org-roam-capture-templates
      `(("d" "default" plain
         "* %?"
-        :target (file+head "%<%Y-%m-%d>.org"
-                           "#+title: %<%Y-%m-%d>\n"))
+        :target (file+head "%<%Y%m%d%H%M%S>
+-${slug}.org"
+                           "#+title: ${title}\n"))
        ("p" "project" plain
         (file ,(concat org-roam-directory "/templates/project.org"))
-        :target (file+head "%<%Y-%m-%d>.org"
-                           "#+title: %<%Y-%m-%d>\n#+filetags: project\n#+date: %U")
+        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title:${title}\n#+filetags: project\n#+date: %U")
         :unarrowed t)
        ("c" "concept" plain
         (file ,(concat org-roam-directory "/templates/concept.org"))
-        :target (file+head "%<%Y-%m-%d>.org"
-                           "#+title: %<%Y-%m-%d>\n#+filetags: concept\n#+ %U")
+        :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                           "#+title: ${title}\n#+filetags: concept\n#+ %U")
         :unarrowed t))
      )
+
+    (org-roam-dailies-capture-templates
+     '(("d" "default" entry
+        "* %?"
+        :target (file+head "%<%Y-%m-%d>.org"
+                           "#+title: %<%Y-%m-%d>\n"))))
+
     :bind        ("C-c n l" . org-roam)
     ("C-c n f" . org-roam-node-find)
     ("C-c n b" . org-roam-switch-to-buffer)
     ("C-c n g" . org-roam-graph-show)
+    ("C-c n c" . org-roam-dailies-capture-today)
     ("C-c n i" . org-roam-node-insert)
     )
+
+  (use-package org-roam-ui)
 
 
 #+end_src
 
 ** JSON
 #+begin_src emacs-lisp
-  ;; Json mode
+    ;; Json mode
 
-  (defun prettify-json()
-    (interactive)
-    (json-pretty-print-buffer)
-    (delete-trailing-whitespace)
-    )
+    (defun prettify-json()
+      (interactive)
+      (json-pretty-print-buffer)
+      (delete-trailing-whitespace)
+      )
 
 
-  (use-package json-mode)
-  (use-package flymake-easy)
-  (use-package flymake-json
-    :hook (json-mode . (lambda () (
-                                   flymake-json-load
-                                   (lsp) ; This requires jsonlint installed on npm (TODO: Automate the setup)
-                                   (company-mode)
-                                   (setq-local company-dabbrev-downcase nil) ; Keep letters case on company completions
-                                   )
-                         )
-                     )
-    :bind (("M-F" . 'prettify-json))
-    )
+    (use-package json-mode
+      :custom (mode-require-final-newline nil)
+      )
+
+    (use-package flymake-easy)
+    (use-package flymake-json
+      :hook (json-mode . (lambda () (
+                                     flymake-json-load
+                                     (lsp) ; This requires jsonlint installed on npm (TODO: Automate the setup)
+                                     (company-mode)
+                                     )
+                           )
+                       )
+      :bind (("M-F" . 'prettify-json))
+      )
+
+#+end_src
+
+
+
+** Search Engines
+#+begin_src emacs-lisp
+    (use-package engine-mode
+      :ensure t
+
+      :config
+      (engine-mode t))
+
+    (defengine amazon
+    "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=%s")
+
+  (defengine github
+    "https://github.com/search?ref=simplesearch&q=%s"
+    :keybinding "h")
+
+  (defengine google
+    "https://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
+    :keybinding "g")
+
+  (defengine google-images
+    "https://www.google.com/images?hl=en&source=hp&biw=1440&bih=795&gbv=2&aq=f&aqi=&aql=&oq=&q=%s")
+
+  (defengine google-maps
+    "https://maps.google.com/maps?q=%s"
+    :docstring "Mappin' it up.")
+
+  (defengine project-gutenberg
+    "https://www.gutenberg.org/ebooks/search/?query=%s")
+
+  (defengine qwant
+    "https://www.qwant.com/?q=%s")
+
+  (defengine stack-overflow
+    "https://stackoverflow.com/search?q=%s"
+    :keybinding "s")
+
+  (defengine twitter
+    "https://twitter.com/search?q=%s")
+
+  (defengine wikipedia
+    "https://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
+    :keybinding "w"
+    :docstring "Searchin' the wikis.")
+
+  (defengine wiktionary
+    "https://www.wikipedia.org/search-redirect.php?family=wiktionary&language=en&go=Go&search=%s"
+    :keybinding "d")
+
+  (defengine wolfram-alpha
+    "https://www.wolframalpha.com/input/?i=%s")
+
+  (defengine youtube
+    "https://www.youtube.com/results?aq=f&oq=&search_query=%s"
+    :keybinding "y")
 #+end_src
 
 
@@ -380,7 +473,13 @@
 * Navigation
 #+begin_src emacs-lisp
   ;; Set default browser
-  (setq browse-url-generic-program (if (eq system-type 'windows-nt) "c:/Program Files/Google/Chrome/Application/chrome.exe" "/bin/firefox"))
+  (setq browse-url-generic-program (if (eq system-type 'windows-nt)
+                                       (if (string-equal (downcase system-name) "desktop-bc8fpn3")
+                                           ;; Specific paths for my work laptop
+                                           "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+                                         "C:/Program Files/Google/Chrome/Application/chrome.exe"
+                                         )
+                                     "/bin/firefox"))
   (setq browse-url-browser-function 'browse-url-generic)
 
 
@@ -468,8 +567,8 @@
   (setq-default tab-width 2)
   (setq indent-line-function 'insert-tab)
 
-  ;; Set indent to 4 spaces also in json.el
-  (setq json-encoding-default-indentation    "    ")
+  ;; Set indent to 2 spaces in json.el
+  (setq json-encoding-default-indentation    "  ")
 
 
 #+end_src
@@ -501,11 +600,22 @@
     )
 
   (use-package lua-mode)
+  (use-package google-this)
+  (google-this-mode 1)
 
   (use-package mastodon
     :config (setq mastodon-active-user "OsherJa")
     (setq mastodon-instance-url "https://fosstodon.org")
     )
+
+  (use-package openai) ;; TODO read key from file C:\tools\openai_key.txt
+  (use-package codegpt)
+
+  (if (string-equal (downcase system-name) "osherj-lp")
+      ;; Specific utils for my work laptop
+      (load-file "c:/tools/elisp_tools.el")
+      )
+
 #+end_src
 
 ;; Local Variables: 
