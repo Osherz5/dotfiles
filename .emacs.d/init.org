@@ -81,7 +81,7 @@
   ;;(use-package solarized-theme)
   ;;(load-theme 'solarized-dark t)
 
-  (use-package dracula-theme)
+  ;; (use-package dracula-theme)
   (load-theme 'dracula t)
 
   (use-package transpose-frame
@@ -138,37 +138,39 @@
 
 #+begin_src emacs-lisp
 
-  (use-package lsp-mode
-    :config
-    (add-to-list 'lsp-file-watch-ignored-directories "c:/projects/C2Server/c2_research'")
-    )
-  (use-package lsp-pyright
-    :hook (python-mode . (lambda ()
-                           (require 'lsp-pyright)
-                           (lsp))); or lsp-deferred
-    :bind (:map python-mode-map ("C-M-l r" . lsp-workspace-restart)
-                ("C-M-l R" . lsp-rename)
-                ("M-r" . lsp-find-references)
-                )
-    )
+    (use-package lsp-mode
+      :config
+      (add-to-list 'lsp-file-watch-ignored-directories "c:/projects/C2Server/c2_research'")
+      )
+    (use-package lsp-pyright
+      :hook (python-mode . (lambda ()
+                             (require 'lsp-pyright)
+                             (lsp))); or lsp-deferred
+      :bind (:map python-mode-map ("C-M-l r" . lsp-workspace-restart)
+                  ("C-M-l R" . lsp-rename)
+                  ("M-r" . lsp-find-references)
+                  )
+      )
 
-  (use-package company
-    :ensure t
-    :delight company-mode
-    :demand t
-    :init
-    (setq company-idle-delay 0.1
-          company-minimum-prefix-length 1)
-    :bind (:map company-active-map
-                ("<return>" . nil) ; Disabling completion on <return>
-                ("C-n" . company-select-next)
-                ("C-p". company-select-previous))
-    :config
-    (setq company-dabbrev-downcase nil) ; Keep letters case on company completions
-    (global-company-mode t)
+    (use-package company
+      :ensure t
+      :delight company-mode
+      :demand t
+      :init
+      (setq company-idle-delay 0.1
+            company-minimum-prefix-length 1)
+      :bind (:map company-active-map
+                  ("<return>" . nil) ; Disabling completion on <return>
+                  ("C-n" . company-select-next)
+                  ("C-p". company-select-previous))
+      :config
+      (setq company-dabbrev-downcase nil) ; Keep letters case on company completions
+      (global-company-mode t)
 
-    :hook (shell-mode . (lambda () (company-mode -1))) ; Disable company in shell mode
-    )
+      :hook
+      (shell-mode . (lambda () (company-mode -1))) ; Disable company in shell mode
+      (org-mode . (lambda () (company-mode -1))) ; Disable in org
+      )
 #+end_src
 
 ** Org Mode
@@ -205,9 +207,11 @@
   (add-to-list 'org-structure-template-alist '("p" . "src python"))
   (add-to-list 'org-structure-template-alist '("shell" . "src shell"))
   (add-to-list 'org-structure-template-alist '("r" . "src R"))
+  (add-to-list 'org-structure-template-alist '("u" . "src Lua"))
 
   (when (eq system-type 'windows-nt)
     (setq org-babel-R-command "c:/Progra~1/R/R-4.2.1/bin/R --slave --no-save")
+  
     )
 
   ;; Org handle tabs on src blocks
@@ -394,15 +398,16 @@
 
 * Windows stuff
 #+begin_src emacs-lisp
-  (when (eq system-type 'windows-nt)
-    (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"") ;Fix find in dired
-    (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe") ; <- your ctags path here
-    (setq compile-command  "C:/tools/msys64/mingw64/bin/mingw32-make.exe -k ") ; Use Mingw32 make.exe
+    (when (eq system-type 'windows-nt)
+      (setq find-program "\"C:\\Program Files\\Git\\usr\\bin\\find.exe\"") ;Fix find in dired
+      (setq path-to-ctags "C:/Users/osherj/scoop/shims/ctags.exe") ; <- your ctags path here
+      (setq compile-command  "C:/tools/msys64/mingw64/bin/mingw32-make.exe -k ") ; Use Mingw32 make.exe
+      (setq tramp-default-method "plink")
 
-    ;; Fix python path in windows
-    (setq python-shell-interpreter "ipython"
-          python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
-    )
+      ;; Fix python path in windows
+      (setq python-shell-interpreter "ipython"
+            python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
+      )
 
 
 #+end_src
