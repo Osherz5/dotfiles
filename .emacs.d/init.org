@@ -141,7 +141,7 @@
 
     (use-package lsp-mode
       :config
-      (add-to-list 'lsp-file-watch-ignored-directories "c:/projects/C2Server/c2_research'")
+      (setq lsp-enable-file-watchers nil)
       )
     (use-package lsp-pyright
       :hook (python-mode . (lambda ()
@@ -212,12 +212,13 @@
 
   (when (eq system-type 'windows-nt)
     (setq org-babel-R-command "c:/Progra~1/R/R-4.2.1/bin/R --slave --no-save")
-  
+
     )
 
   ;; Org handle tabs on src blocks
   (setq org-src-tab-acts-natively t)
 
+ 	
   ;; Enable cdlatex in org
   (use-package cdlatex)
   (add-hook 'org-mode-hook #'turn-on-org-cdlatex)
@@ -248,8 +249,8 @@
       ;; Specific org paths for my work laptop
 
       (progn
-        (setq org-agenda-files (list "c:/synced/Work.org" "c:/roam"))  ; Set up my task management file (Backed by SyncThing)
         (find-file "c:/synced/Work.org") ; It's also the default startup buffer
+        (setq org-agenda-files (list "c:/synced/Work.org" "c:/roam"))  ; Set up my task management file (Backed by SyncThing)
         )
     (progn
       (setq org-agenda-files (list  ; Org paths on personal computer
@@ -268,6 +269,7 @@
   (use-package org-roam
     ;;:hook
     ;;(after-init . org-roam-mode)
+
 
     :config
     (org-roam-db-autosync-mode)
@@ -415,6 +417,7 @@
     ;; Fix python path in windows
     (setq python-shell-interpreter "ipython"
           python-shell-interpreter-args "-i --simple-prompt --InteractiveShell.display_page=True")
+
   )
 
 #+end_src
@@ -566,6 +569,21 @@
   ;; Set indent to 2 spaces in json.el
   (setq json-encoding-default-indentation    "  ")
 
+  (defun uniquify-all-lines-region (start end)
+    "Find duplicate lines in region START to END keeping first occurrence."
+    (interactive "*r")
+    (save-excursion
+      (let ((end (copy-marker end)))
+        (while
+            (progn
+              (goto-char start)
+              (re-search-forward "^\\(.*\\)\n\\(\\(.*\n\\)*\\)\\1\n" end t))
+          (replace-match "\\1\n\\2")))))
+  
+  (defun uniquify-all-lines-buffer ()
+    "Delete duplicate lines in buffer and keep first occurrence."
+    (interactive "*")
+    (uniquify-all-lines-region (point-min) (point-max)))
 
 #+end_src
 
@@ -594,6 +612,9 @@
     (shell-command
      (format "%s -e -f TAGS -R %s" path-to-ctags (directory-file-name dir-name)))
     )
+
+  (use-package tex
+      :ensure auctex)
 
   (use-package lua-mode)
   (use-package google-this)
